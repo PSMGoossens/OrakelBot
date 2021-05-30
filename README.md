@@ -1,0 +1,2 @@
+# OrakelBot
+Funny Discord Bot
