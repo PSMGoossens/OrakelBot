@@ -159,26 +159,26 @@ namespace ISurvivalBot
                 var counter = await commandCountService.CountAndIncrementCommandByUser("bruh", (long)message.Author.Id, wordCount);
                 await message.Channel.SendMessageAsync($"{message.Author.Username} heeft {counter} keer bruh gezegd!");
             }
-            else if (messageText.Contains("meh"))
+            if (messageText.Contains("meh"))
             {
                 int wordCount = wordDuplication(messageText, "meh");
                 var commandCountService = services.GetRequiredService<CommandCountService>();
                 var counter = await commandCountService.CountAndIncrementCommandByUser("meh", (long)message.Author.Id, wordCount);
                 await message.Channel.SendMessageAsync($"{message.Author.Username} heeft {counter} schaapjes geteld!");
             }
-            else if (messageText.Contains("sad") || messageText.Contains("verdrietig"))
+            if (messageText.Contains("sad") || messageText.Contains("verdrietig"))
             {
                 await message.AddReactionAsync(CommonEmoij.PANDA_CRY);
             }
-            else if (messageText.Contains("boos") || messageText.Contains("angry"))
+            if (messageText.Contains("boos") || messageText.Contains("angry"))
             {
                 await message.AddReactionAsync(CommonEmoij.PANDA_ANGRY);
             }
-            else if (messageText.Contains("slapen") || messageText.Contains("slaap"))
+            if (messageText.Contains("slapen") || messageText.Contains("slaap"))
             {
                 await message.AddReactionAsync(CommonEmoij.PANDA_SLEEP);
             }
-            else if (messageText.Contains("autisme") || messageText.Contains("autism"))
+            if (messageText.Contains("autisme") || messageText.Contains("autism"))
             {
                 await message.AddReactionAsync(CommonEmoij.AUTISM);
             }
