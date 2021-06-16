@@ -33,12 +33,11 @@ namespace ISurvivalBot.Commands
         {
             var result = await _service.JoinAudio(Context.Guild, (Context.User as IVoiceState).VoiceChannel);
             await Context.Message.AddReactionAsync(result == AudioServiceStatus.Succes ? CommonEmoij.OK : CommonEmoij.NOK);
-            
-            /*Emoji custom = null;
-            foreach(var emoij in Context.Guild.Emotes)
+
+            foreach (var emoij in Context.Guild.Emotes)
             {
                 Console.WriteLine($"Name: {emoij.Name} Url: {emoij.Url}, Id: {emoij.Id}");
-            }*/
+            }
             await Context.Message.AddReactionAsync(CommonEmoij.BEREND);
         }
 

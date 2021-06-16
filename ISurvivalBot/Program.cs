@@ -3,6 +3,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using ISurvivalBot.Models;
 using ISurvivalBot.Services;
+using ISurvivalBot.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
@@ -60,6 +61,7 @@ namespace ISurvivalBot
                 client.MessageReceived += Client_MessageReceived;
                 client.GuildMemberUpdated += Client_GuildMemberUpdated;
                 client.UserUpdated += Client_UserUpdated;
+                client.ReactionAdded += Client_ReactionAdded;
                 services.GetRequiredService<CommandService>().Log += LogAsync;
 
                 // this is where we get the Token value from the configuration file, and start the bot
@@ -85,6 +87,11 @@ namespace ISurvivalBot
 
                 await Task.Delay(-1);
             }
+        }
+
+        private async Task Client_ReactionAdded(Cacheable<IUserMessage, ulong> messageFromUser, ISocketMessageChannel message, SocketReaction argument)
+        {
+            //throw new NotImplementedException();
         }
 
         private async Task Client_GuildMembersDownloaded(SocketGuild guild)
@@ -158,6 +165,22 @@ namespace ISurvivalBot
                 var commandCountService = services.GetRequiredService<CommandCountService>();
                 var counter = await commandCountService.CountAndIncrementCommandByUser("meh", (long)message.Author.Id, wordCount);
                 await message.Channel.SendMessageAsync($"{message.Author.Username} heeft {counter} schaapjes geteld!");
+            }
+            else if (messageText.Contains("sad") || messageText.Contains("verdrietig"))
+            {
+                await message.AddReactionAsync(CommonEmoij.PANDA_CRY);
+            }
+            else if (messageText.Contains("boos") || messageText.Contains("angry"))
+            {
+                await message.AddReactionAsync(CommonEmoij.PANDA_ANGRY);
+            }
+            else if (messageText.Contains("slapen") || messageText.Contains("slaap"))
+            {
+                await message.AddReactionAsync(CommonEmoij.PANDA_SLEEP);
+            }
+            else if (messageText.Contains("autisme") || messageText.Contains("autism"))
+            {
+                await message.AddReactionAsync(CommonEmoij.AUTISM);
             }
         }
 

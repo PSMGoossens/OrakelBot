@@ -2,6 +2,7 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,11 +17,13 @@ namespace ISurvivalBot.Services
         private readonly CommandService _commands;
         private readonly DiscordSocketClient _discord;
         private readonly IServiceProvider _services;
+        private readonly ILogger<CommandHandlingService> _logger;
 
-        public CommandHandlingService(IServiceProvider services)
+        public CommandHandlingService(IServiceProvider services, ILogger<CommandHandlingService> logger)
         {
             _commands = services.GetRequiredService<CommandService>();
             _discord = services.GetRequiredService<DiscordSocketClient>();
+            _logger = logger;
             _services = services;
 
             // Hook CommandExecuted to handle post-command-execution logic.
@@ -49,7 +52,7 @@ namespace ISurvivalBot.Services
             // for a more traditional command format like !help.
             //if (!message.HasMentionPrefix(_discord.CurrentUser, ref argPos)) return;
             if (!message.HasCharPrefix('!', ref argPos)) return;
-
+            _logger.LogInformation($"From: {rawMessage.Author.Username} on channel: {rawMessage.Channel.Name}, message: {rawMessage.Content}.");
             var context = new SocketCommandContext(_discord, message);
             // Perform the execution of the command. In this method,
             // the command service will perform precondition and parsing check
