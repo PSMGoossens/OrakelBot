@@ -30,7 +30,7 @@ namespace ISurvivalBot.Models
 
             string path = Path.Combine(Environment.CurrentDirectory, "bot.db");
             options.UseSqlite($"Data Source = {path}");
-            options.UseLoggerFactory(_loggingFactory);
+            //options.UseLoggerFactory(_loggingFactory);
         }
 
         internal void EnqureCreated()

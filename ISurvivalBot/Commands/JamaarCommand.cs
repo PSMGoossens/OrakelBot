@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,11 @@ namespace ISurvivalBot.Commands
 {
     public class JamaarCommand : ModuleBase<SocketCommandContext>
     {
+
+        private readonly ILogger<JamaarCommand> _logger;
+
+        public JamaarCommand(ILogger<JamaarCommand> logger) => _logger = logger;
+
 
 
         public static Random random = new Random();
@@ -102,6 +108,7 @@ namespace ISurvivalBot.Commands
         public async Task Jamaar([Remainder] string text)
         {
             int answer = random.Next(this.cards.Count);
+            _logger.LogInformation($"Jamaar Command from: {Context.Message.Author.Username} on channel {Context.Channel.Name}, Question: \"{text}\" Answer: {this.cards[answer]}.");
             await Context.Message.ReplyAsync(this.cards[answer]);
         }
     }

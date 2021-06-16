@@ -91,12 +91,6 @@ namespace ISurvivalBot
         {
             _logger.LogInformation($"Downloaded Guild {guild.Name} becomes available, with id: {guild.Id}");
 
-            /*var usersList = guild.Users.AsEnumerable().Select(o =>
-            {
-                Tuple.Create(o.Id, o.Username);
-
-            }).ToList();*/
-
             var userList = new List<Tuple<long, string>>();
 
             foreach (var user in guild.Users)
@@ -104,27 +98,13 @@ namespace ISurvivalBot
                 userList.Add(Tuple.Create((long)user.Id, user.Username));
             }
 
-            services.GetRequiredService<UserService>().UpdateUsers(userList);
+            await services.GetRequiredService<UserService>().UpdateUsers(userList);
 
-            /*foreach (var user in guild.Users)
-            {
-                _logger.LogInformation($"User id: {user.Id}, Username: {user.Username}");
-            }*/
         }
 
         private async Task Client_GuildAvailable(SocketGuild guild)
         {
             _logger.LogInformation($"Guild {guild.Name} becomes available, with id: {guild.Id}");
-
-            //await guild.DownloadUsersAsync();
-            /*await foreach (var lst in guild.GetUsersAsync())
-            {
-                foreach (var user in lst)
-                {
-                    _logger.LogInformation($"User id: {user.Id}, Username: {user.Username}");
-                }
-                //await services.GetRequiredService<UserService>().UpdateUser((long)user.Id, user.Username);
-            }*/
         }
 
         private async Task updateUsers(DiscordSocketClient client)
@@ -143,20 +123,20 @@ namespace ISurvivalBot
                 {
                     _logger.LogInformation($"User id: {user.Id}, Username: {user.Username}");
                 }
-                //await services.GetRequiredService<UserService>().UpdateUser((long)user.Id, user.Username);
             }
         }
 
         private async Task Client_UserUpdated(SocketUser old, SocketUser newU)
         {
             //throw new NotImplementedException();
-            _logger.LogInformation($"Old user: {old.Username} new user: {newU.Username}, Status: {newU.Status}");
+            _logger.LogInformation($"User {old.Username} with status {old.Status} becomes user: {newU.Username} new status {newU.Status}");
         }
 
         private  async Task Client_GuildMemberUpdated(SocketGuildUser old, SocketGuildUser newU)
         {
             //throw new NotImplementedException();
-            _logger.LogInformation($"Old user: {old.Username} new user: {newU.Username}, Status: {newU.Status}");
+            //_logger.LogInformation($"Old user: {old.Username} new user: {newU.Username}, Status: {newU.Status}");
+            _logger.LogInformation($"User {old.Username} with status {old.Status} becomes user: {newU.Username} new status {newU.Status}");
         }
 
         private async Task Client_MessageReceived(SocketMessage message)
@@ -193,13 +173,6 @@ namespace ISurvivalBot
                 return statistics[word]; 
             return 1;
         }
-
-        private Task Log(LogMessage msg)
-        {
-            _logger.LogInformation(msg.ToString());
-            return Task.CompletedTask;
-        }
-
 
         private Task LogAsync(LogMessage log)
         {

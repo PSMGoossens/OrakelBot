@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 using ISurvivalBot.Services;
+using ISurvivalBot.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -89,7 +90,7 @@ namespace ISurvivalBot.Commands
         [Command("userinfo")]
         public async Task UserInfoAsync(IUser user = null)
         {
-            user = user ?? Context.User;
+            user ??= Context.User;
 
             await ReplyAsync(user.ToString());
         }
@@ -100,6 +101,12 @@ namespace ISurvivalBot.Commands
         {
             question = HttpUtility.UrlEncode(question);
             await ReplyAsync($"https://letmegooglethat.com/?q={question}");
+        }
+
+        [Command("berend")]
+        public async Task BerendCommand()
+        {
+            await Context.Message.AddReactionAsync(CommonEmoij.BEREND);
         }
 
         // Ban a user
