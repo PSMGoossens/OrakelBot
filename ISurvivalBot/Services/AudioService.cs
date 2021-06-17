@@ -94,7 +94,7 @@ namespace ISurvivalBot.Services
             AudioServiceState audioState = await getAudioState(guild);
             if (audioState == null)
             {
-                Console.WriteLine("Not connected");
+                _logger.LogInformation("Not connected");
                 return AudioServiceStatus.Failure;
             }
             if (audioState.IsPlaying)
@@ -126,6 +126,7 @@ namespace ISurvivalBot.Services
             if (!File.Exists(path))
             {
                 await channel.SendMessageAsync("File does not exist.");
+                _logger.LogInformation("Not connected");
                 return AudioServiceStatus.Failure;
             }
 
@@ -139,7 +140,7 @@ namespace ISurvivalBot.Services
             var psi = new ProcessStartInfo
             {
                 FileName = "ffmpeg",
-                Arguments = $@"-hide_banner -loglevel panic -i ""{path}"" -ac 2 -f s16le -ar 48000 pipe:1",
+                Arguments = $"-hide_banner -loglevel panic -i \"{path}\" -ac 2 -f s16le -ar 48000 pipe:1",
                 RedirectStandardOutput = true,
                 UseShellExecute = false
             };

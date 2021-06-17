@@ -11,7 +11,7 @@ namespace ISurvivalBot.Commands
     public class ToevalCommand : ModuleBase<SocketCommandContext>
     {
         public static Random random = new Random();
-        public List<String> cards = new List<string>()
+        private List<String> cards = new List<string>()
         {
             "Kun jij ook hinken op twee gedachten?",
             "Kiezen voor liefde is soms loslaten.",
@@ -149,6 +149,7 @@ namespace ISurvivalBot.Commands
 
 
         [Command("spreuk")]
+        [Summary("Random spreuk van de dag")]
         public async Task Jamaar(/*[Remainder] string text*/)
         {
             int answer = random.Next(this.cards.Count);

@@ -17,6 +17,7 @@ namespace ISurvivalBot.Commands
     {
         // Dependency Injection will fill this value in for us
         public PictureService PictureService { get; set; }
+        private readonly static Random random = new Random();
 
         [Command("ping")]
         [Alias("pong", "hello")]
@@ -25,8 +26,16 @@ namespace ISurvivalBot.Commands
             await Context.Message.ReplyAsync("pong!");
         }
 
+        [Command("help")]
+        [Summary("Help command")]
+        public async Task HelpCommand()
+        {
+            await Context.Message.ReplyAsync("Even geduld a.u.b. de bot met een helpfunctie is ook binnenkort op uw discord server beschikbaar!");
+        }
+
 
         [Command("cat")]
+        [Summary("Shows a picture of a random cat.")]
         public async Task CatAsync()
         {
             // Get a stream containing an image of a cat
@@ -37,6 +46,7 @@ namespace ISurvivalBot.Commands
         }
 
         [Command("catfact")]
+        [Summary("Reacts with a random cat fact.")]
         public async Task CatFactAsync()
         {
             // Get random cat fact
@@ -45,6 +55,7 @@ namespace ISurvivalBot.Commands
         }
 
         [Command("terry")]
+        [Summary("TempleOS")]
         public async Task TerryCommand()
         {
             Emoji custom = null;
@@ -57,6 +68,7 @@ namespace ISurvivalBot.Commands
 
 
         [Command("dog")]
+        [Summary("Shows a picture of a random dog.")]
         public async Task DogAsync()
         {
             // Get a stream containing an image of a dog
@@ -67,6 +79,7 @@ namespace ISurvivalBot.Commands
         }
 
         [Command("fox")]
+        [Summary("Shows a picture of a random fox.")]
         public async Task FoxAsync()
         {
             // Get a stream containing an image of a dog
@@ -77,6 +90,7 @@ namespace ISurvivalBot.Commands
         }
 
         [Command("panda")]
+        [Summary("Shows a picture of a random panda.")]
         public async Task PandaAsync()
         {
             // Get a stream containing an image of a dog
@@ -84,15 +98,6 @@ namespace ISurvivalBot.Commands
             // Streams must be seeked to their beginning before being uploaded!
             stream.Seek(0, SeekOrigin.Begin);
             await Context.Channel.SendFileAsync(stream, "panda.png");
-        }
-
-        // Get info on a user, or the user who invoked the command if one is not specified
-        [Command("userinfo")]
-        public async Task UserInfoAsync(IUser user = null)
-        {
-            user ??= Context.User;
-
-            await ReplyAsync(user.ToString());
         }
 
 
@@ -107,6 +112,12 @@ namespace ISurvivalBot.Commands
         public async Task BerendCommand()
         {
             await Context.Message.AddReactionAsync(CommonEmoij.BEREND);
+        }
+
+        [Command("kopmunt")]
+        public async Task KopMuntCommand()
+        {
+            await ReplyAsync(random.Next(0, 1) == 1 ? "Kop" : "Munt");
         }
 
         // Ban a user

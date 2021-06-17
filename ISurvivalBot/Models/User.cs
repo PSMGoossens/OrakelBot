@@ -18,6 +18,8 @@ namespace ISurvivalBot.Models
 
         public bool IsAdmin { get; set; }
 
+        public string Discriminator { get; set; }
+
 
     }
 }

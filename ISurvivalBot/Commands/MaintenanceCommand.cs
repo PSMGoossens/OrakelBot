@@ -13,6 +13,7 @@ namespace ISurvivalBot.Commands
 {
 
 
+    [Summary("Admin mode")]
     [Group("maintenance")]
     public class MaintenanceCommand : ModuleBase<SocketCommandContext>
     {
@@ -29,6 +30,11 @@ namespace ISurvivalBot.Commands
         }
 
 
+        /// <summary>
+        /// __TODO__ is this smart? Or juist update anything
+        /// </summary>
+        /// <returns></returns>
+        [Summary("Update current user")]
         [Command("update", RunMode = RunMode.Async)]
         public async Task UpdateCommand()
         {
@@ -56,7 +62,8 @@ namespace ISurvivalBot.Commands
 
 
         [Command("isadmin", RunMode = RunMode.Async)]
-        public async Task IsAdminCommand(string username)
+        [Summary("Checks if the specific user is.")]
+        public async Task IsAdminCommand([Summary("Username")] string username)
         {
             var mentionUser = Context.Message.MentionedUsers.FirstOrDefault();
             bool result = await _userService.IsAdmin(mentionUser == null ? username : mentionUser.Username);
@@ -65,7 +72,8 @@ namespace ISurvivalBot.Commands
         }
 
         [Command("sayprivate", RunMode = RunMode.Async)]
-        public async Task SayPrivate(ulong userId, string text)
+        [Summary("Sends a private message to a specific user.")]
+        public async Task SayPrivate([Summary("UserId")] ulong userId, [Summary("Text to send to the user")] string text)
         {
             bool isRequesterAdmin = await _userService.IsAdmin(Context.Message.Author.Username);
             if (!isRequesterAdmin)
@@ -89,7 +97,8 @@ namespace ISurvivalBot.Commands
         }
 
         [Command("sayprivate", RunMode = RunMode.Async)]
-        public async Task SayPrivate(string userName, string text)
+        [Summary("Sends a private message to a specific user.")]
+        public async Task SayPrivate([Summary("Username")] string userName, [Summary("Text to send to the user")] string text)
         {
             bool isRequesterAdmin = await _userService.IsAdmin(Context.Message.Author.Username);
             if (!isRequesterAdmin)
@@ -111,6 +120,30 @@ namespace ISurvivalBot.Commands
                 return;
             }
         }
+
+        //[Command("saychannel", RunMode = RunMode.Async)]
+        //[Summary("Sends a private message to a specific channel.")]
+        //public async Task SayPrivate(ulong channelId, [Summary("Text to send to the user")] string text)
+        //{
+        //    bool isRequesterAdmin = await _userService.IsAdmin(Context.Message.Author.Username);
+        //    if (!isRequesterAdmin)
+        //    {
+        //        await Context.Message.AddReactionAsync(CommonEmoij.NOK);
+        //        return;
+        //    }
+        //    var channelSend = _discordSocketClient.GetGuild(channelId);
+        //    if (channelSend == null)
+        //    {
+        //        await Context.Message.AddReactionAsync(CommonEmoij.NOK);
+        //        return;
+        //    }
+        //    else
+        //    {
+        //        await channelSend.(text);
+        //        await Context.Message.AddReactionAsync(CommonEmoij.OK);
+        //        return;
+        //    }
+        //}
 
 
     }

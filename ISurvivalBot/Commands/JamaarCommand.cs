@@ -105,6 +105,7 @@ namespace ISurvivalBot.Commands
 
 
         [Command("jamaar")]
+        [Summary("Stel een dilemma voor aan de bot. Dit geef je achter !jamaar in de tekst aan")]
         public async Task Jamaar([Remainder] string text)
         {
             int answer = random.Next(this.cards.Count);

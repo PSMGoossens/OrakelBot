@@ -27,6 +27,7 @@ namespace ISurvivalBot.Commands
         // You *MUST* mark these commands with 'RunMode.Async'
         // otherwise the bot will not respond until the Task times out.
         [Command("joins", RunMode = RunMode.Async)]
+        [Summary("Joins your current Voice Chat Channel")]
         [RequireContext(ContextType.Guild, ErrorMessage = "This command is only possible via a public channel.")]
         //[RequireBotPermission(ChannelPermission.Speak, ErrorMessage = "I don't have permissions to join a voice chat")]
         public async Task JoinCmd()
@@ -45,6 +46,7 @@ namespace ISurvivalBot.Commands
         // this is merely the minimal amount necessary.
         // Adding more commands of your own is also encouraged.
         [Command("leaves", RunMode = RunMode.Async)]
+        [Summary("Leaves your current Voice Chat Channel")]
         [RequireContext(ContextType.Guild, ErrorMessage = "This command is only possible via a public channel.")]
         public async Task LeaveCmd()
         {
@@ -54,7 +56,8 @@ namespace ISurvivalBot.Commands
 
         [Command("plays", RunMode = RunMode.Async)]
         [RequireContext(ContextType.Guild, ErrorMessage = "This command is only possible via a public channel.")]
-        public async Task PlayCmd([Remainder] string song)
+        [Summary("Plays a specific song from the harddrive")]
+        public async Task PlayCmd([Summary("Song location")]string song)
         {
             var result = await _service.PlaySound(Context.Guild, Context.Channel, (Context.User as IVoiceState).VoiceChannel, song);
             await Context.Message.AddReactionAsync(result == AudioServiceStatus.Succes ? CommonEmoij.OK : CommonEmoij.NOK);
@@ -62,6 +65,7 @@ namespace ISurvivalBot.Commands
 
         [Command("stops", RunMode = RunMode.Async)]
         [RequireContext(ContextType.Guild, ErrorMessage = "This command is only possible via a public channel.")]
+        [Summary("Stops playing the current song")]
         public async Task StopCmd()
         {
             var result = await _service.StopPlaying(Context.Guild, (Context.User as IVoiceState).VoiceChannel);
@@ -70,13 +74,15 @@ namespace ISurvivalBot.Commands
 
         [Command("say", RunMode = RunMode.Async)]
         [RequireContext(ContextType.Guild, ErrorMessage = "This command is only possible via a public channel.")]
-        public async Task SayText([Remainder] string text)
+        [Summary("Says a specific text inside a voice channel")]
+        public async Task SayText([Remainder] [Summary("Text to speak")] string text)
         {
             var result = await _service.SayText(Context.Guild, (Context.User as IVoiceState).VoiceChannel,  Context.Channel, text);
             await Context.Message.AddReactionAsync(result == AudioServiceStatus.Succes ? CommonEmoij.OK : CommonEmoij.NOK);
         }
 
         [Command("listaudio", RunMode = RunMode.Async)]
+        [Summary("List all available audio files")]
         public async Task ListAudioFiles()
         {
             var result = await _service.ListAudio(Context);
