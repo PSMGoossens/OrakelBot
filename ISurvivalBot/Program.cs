@@ -152,7 +152,11 @@ namespace ISurvivalBot
             if (sum != null && !sum.Author.IsBot)
             {
                 var debugUser = _client.GetUser(438976181237448705);
-                await debugUser.SendMessageAsync($"Author {sum.Author.Username} said in channel: {sum.Channel.Name} message: {sum.Content}.");
+                string debugMessage = $"Author {sum.Author.Username} said in channel: {sum.Channel.Name} message: {sum.Content}.";
+                if (debugMessage.Length < 2000)
+                    await debugUser.SendMessageAsync(debugMessage);
+                else
+                    await debugUser.SendMessageAsync(debugMessage.Substring(0, 1980) + "...");
             }
 
             string messageText = message.Content.ToLowerInvariant();
