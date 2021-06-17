@@ -57,7 +57,6 @@ namespace ISurvivalBot
                 client.Ready += ReadyAsync;
                 client.MessageReceived += Client_MessageReceived;
                 client.GuildMemberUpdated += Client_GuildMemberUpdated;
-                client.UserUpdated += Client_UserUpdated;
                 client.ReactionAdded += Client_ReactionAdded;
                 services.GetRequiredService<CommandService>().Log += LogAsync;
 
@@ -130,11 +129,6 @@ namespace ISurvivalBot
             }
         }
 
-        private async Task Client_UserUpdated(SocketUser old, SocketUser newU)
-        {
-            _logger.LogInformation($"1. User {old.Username} with status {old.Status} becomes user: {newU.Username} new status {newU.Status}");
-        }
-
         private  async Task Client_GuildMemberUpdated(SocketGuildUser old, SocketGuildUser newU)
         {
             _logger.LogInformation($"2. User {old.Username} with status {old.Status} becomes user: {newU.Username} new status {newU.Status}");
@@ -143,23 +137,27 @@ namespace ISurvivalBot
         private async Task Client_MessageReceived(SocketMessage message)
         {
 
-            // Diagnostics towards Etienne ;)
-            SocketUserMessage sum = message as SocketUserMessage;
-            if (sum != null && !sum.Author.IsBot)
-            {
-                var debugUser = _client.GetUser(438976181237448705);
-                string debugMessage = $"Author {sum.Author.Username} said in channel: {sum.Channel.Name} message: {sum.Content}.";
-                if (debugMessage.Length < 2000)
-                    await debugUser.SendMessageAsync(debugMessage);
-                else
-                    await debugUser.SendMessageAsync(debugMessage.Substring(0, 1980) + "...");
-            }
+            
 
             string messageText = message.Content.ToLowerInvariant();
             if (message.Author.Username == "Het Orakel" || message.Content.StartsWith("!"))
                 return;
 
             List<Task> messageTasks = new List<Task>();
+            messageTasks.Add(Task.Run(async () =>
+            {
+                // Diagnostics towards Etienne ;)
+                SocketUserMessage sum = message as SocketUserMessage;
+                if (sum != null && !sum.Author.IsBot)
+                {
+                    var debugUser = _client.GetUser(438976181237448705);
+                    string debugMessage = $"Author {sum.Author.Username} said in channel: {sum.Channel.Name} message: {sum.Content}.";
+                    if (debugMessage.Length < 2000)
+                        await debugUser.SendMessageAsync(debugMessage);
+                    else
+                        await debugUser.SendMessageAsync(debugMessage.Substring(0, 1980) + "...");
+                }
+            }));
 
             messageTasks.Add(Task.Run(async () =>
             {
@@ -183,39 +181,28 @@ namespace ISurvivalBot
                 }
             }));
 
-            messageTasks.Add(Task.Run(async () =>
+            messageTasks.Add(Task.Run( async () =>
             {
+                List<Task> emoijTask = new List<Task>();
+
                 if (messageText.Contains("sad") || messageText.Contains("verdrietig"))
                 {
-                    await message.AddReactionAsync(CommonEmoij.PANDA_CRY);
+                    emoijTask.Add(Task.Run(async () => { message.AddReactionAsync(CommonEmoij.PANDA_CRY); }));
                 }
-            }));
-
-            messageTasks.Add(Task.Run(async () =>
-            {
                 if (messageText.Contains("boos") || messageText.Contains("angry"))
                 {
-                    await message.AddReactionAsync(CommonEmoij.PANDA_ANGRY);
+                    emoijTask.Add(Task.Run(async () => { message.AddReactionAsync(CommonEmoij.PANDA_ANGRY); }));
                 }
-            }));
-
-            messageTasks.Add(Task.Run(async () =>
-            {
                 if (messageText.Contains("slapen") || messageText.Contains("slaap") || messageText.Contains("sleep"))
                 {
-                    await message.AddReactionAsync(CommonEmoij.PANDA_SLEEP);
+                    emoijTask.Add(Task.Run(async () => { message.AddReactionAsync(CommonEmoij.PANDA_SLEEP); }));
                 }
-            }));
-
-            messageTasks.Add(Task.Run(async () =>
-            {
                 if (messageText.Contains("autisme") || messageText.Contains("autism"))
                 {
-                    await message.AddReactionAsync(CommonEmoij.AUTISM);
+                    emoijTask.Add(Task.Run(async () => { message.AddReactionAsync(CommonEmoij.AUTISM); }));
                 }
+                await Task.WhenAll(emoijTask);
             }));
-
-
             await Task.WhenAll(messageTasks);
 
 
