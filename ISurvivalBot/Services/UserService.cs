@@ -79,5 +79,14 @@ namespace ISurvivalBot.Services
                 return false;
             return user.IsAdmin;
         }
+
+        public async Task<ulong>  GetDiscordIdByUsername(string username)
+        {
+            var user = await _botContext.Users.AsAsyncEnumerable().Where(u => u.CurrentUsername == username).FirstOrDefaultAsync();
+            if (user == null)
+                return 0;
+            else
+                return (ulong)user.DiscordId;
+        }
     }
 }

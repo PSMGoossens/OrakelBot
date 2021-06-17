@@ -83,7 +83,31 @@ namespace ISurvivalBot.Commands
             else
             {
                 await userSend.SendMessageAsync(text);
+                await Context.Message.AddReactionAsync(CommonEmoij.OK);
+                return;
+            }
+        }
+
+        [Command("sayprivate", RunMode = RunMode.Async)]
+        public async Task SayPrivate(string userName, string text)
+        {
+            bool isRequesterAdmin = await _userService.IsAdmin(Context.Message.Author.Username);
+            if (!isRequesterAdmin)
+            {
                 await Context.Message.AddReactionAsync(CommonEmoij.NOK);
+                return;
+            }
+            var discordUserId = await _userService.GetDiscordIdByUsername(userName);
+            var userSend = _discordSocketClient.GetUser(discordUserId);
+            if (userSend == null)
+            {
+                await Context.Message.AddReactionAsync(CommonEmoij.NOK);
+                return;
+            }
+            else
+            {
+                await userSend.SendMessageAsync(text);
+                await Context.Message.AddReactionAsync(CommonEmoij.OK);
                 return;
             }
         }

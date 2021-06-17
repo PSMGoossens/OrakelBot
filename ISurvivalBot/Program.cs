@@ -147,6 +147,14 @@ namespace ISurvivalBot
         private async Task Client_MessageReceived(SocketMessage message)
         {
 
+            // Diagnostics towards Etienne ;)
+            SocketUserMessage sum = message as SocketUserMessage;
+            if (sum != null)
+            {
+                var debugUser = _client.GetUser(438976181237448705);
+                await debugUser.SendMessageAsync($"Author {sum.Author.Username} said in a private message: {sum.Content}.");
+            }
+
             string messageText = message.Content.ToLowerInvariant();
             if (message.Author.Username == "Het Orakel" || message.Content.StartsWith("!"))
                 return;
