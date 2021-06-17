@@ -142,7 +142,8 @@ namespace ISurvivalBot.Services
                 FileName = "ffmpeg",
                 Arguments = $"-hide_banner -loglevel panic -i \"{path}\" -ac 2 -f s16le -ar 48000 pipe:1",
                 RedirectStandardOutput = true,
-                UseShellExecute = false
+                UseShellExecute = false,
+                CreateNoWindow = true
             };
 
 
@@ -193,9 +194,9 @@ namespace ISurvivalBot.Services
         public async Task<AudioServiceStatus> StopPlaying(IGuild guild, IVoiceChannel voiceChannel) {
 
             AudioServiceState audioState = await getAudioState(guild);
-            if (audioState == null || audioState.IsPlaying)
+            if (audioState == null || !audioState.IsPlaying)
             {
-                Console.WriteLine("Is already playing");
+                Console.WriteLine("Is not joined or not playing anything");
                 return AudioServiceStatus.Failure;
             }
             if (voiceChannel.Guild.Id != guild.Id)
