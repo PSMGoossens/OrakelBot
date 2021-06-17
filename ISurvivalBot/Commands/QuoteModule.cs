@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using Discord.WebSocket;
 using ISurvivalBot.Services;
 using Microsoft.Extensions.Logging;
 using System;
@@ -30,8 +31,14 @@ namespace ISurvivalBot.Commands
 
 
         [Command("add", RunMode = RunMode.Async)]
-        public async Task AddQuoteCommand([Remainder] string text)
+        public async Task AddQuoteCommand(string username, string quote)
         {
+            var mentionUser = Context.Message.MentionedUsers.FirstOrDefault();
+            // No user at the server
+            if (mentionUser == null)
+            {
+
+            }
             await _quoteService.AddQuote(Context.User.Username, Context.Message.Content);
         }
 

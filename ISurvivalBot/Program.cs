@@ -32,6 +32,7 @@ namespace ISurvivalBot
             // create the configuration
             var _builder = new ConfigurationBuilder()
                 .SetBasePath(AppContext.BaseDirectory)
+                .AddUserSecrets<Program>()
                 .AddJsonFile(path: "config.json");
 
             // build the configuration and assign to _config          
@@ -135,14 +136,11 @@ namespace ISurvivalBot
 
         private async Task Client_UserUpdated(SocketUser old, SocketUser newU)
         {
-            //throw new NotImplementedException();
             _logger.LogInformation($"User {old.Username} with status {old.Status} becomes user: {newU.Username} new status {newU.Status}");
         }
 
         private  async Task Client_GuildMemberUpdated(SocketGuildUser old, SocketGuildUser newU)
         {
-            //throw new NotImplementedException();
-            //_logger.LogInformation($"Old user: {old.Username} new user: {newU.Username}, Status: {newU.Status}");
             _logger.LogInformation($"User {old.Username} with status {old.Status} becomes user: {newU.Username} new status {newU.Status}");
         }
 
@@ -174,7 +172,7 @@ namespace ISurvivalBot
             {
                 await message.AddReactionAsync(CommonEmoij.PANDA_ANGRY);
             }
-            if (messageText.Contains("slapen") || messageText.Contains("slaap"))
+            if (messageText.Contains("slapen") || messageText.Contains("slaap") || messageText.Contains("sleep"))
             {
                 await message.AddReactionAsync(CommonEmoij.PANDA_SLEEP);
             }

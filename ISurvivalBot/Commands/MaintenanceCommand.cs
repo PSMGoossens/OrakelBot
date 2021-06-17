@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using Discord.WebSocket;
 using ISurvivalBot.Services;
 using ISurvivalBot.Utils;
 using System;
@@ -18,11 +19,13 @@ namespace ISurvivalBot.Commands
 
         private readonly MaintenanceService _maintenanceService;
         private readonly UserService _userService;
+        private readonly DiscordSocketClient _discordSocketClient;
 
-        public MaintenanceCommand(MaintenanceService maintenanceservice, UserService userService)
+        public MaintenanceCommand(MaintenanceService maintenanceservice, UserService userService, DiscordSocketClient discordSocketClient)
         {
             this._maintenanceService = maintenanceservice;
             this._userService = userService;
+            this._discordSocketClient = discordSocketClient;
         }
 
 
@@ -38,7 +41,10 @@ namespace ISurvivalBot.Commands
         {
             bool isRequesterAdmin = await _userService.IsAdmin(Context.Message.Author.Username);
             if (!isRequesterAdmin)
+            {
                 await Context.Message.AddReactionAsync(CommonEmoij.NOK);
+                return;
+            }
 
             var mentionUser = Context.Message.MentionedUsers.FirstOrDefault();
             if (mentionUser != null)
@@ -56,6 +62,30 @@ namespace ISurvivalBot.Commands
             bool result = await _userService.IsAdmin(mentionUser == null ? username : mentionUser.Username);
             await Context.Message.AddReactionAsync(result ? CommonEmoij.OK : CommonEmoij.NOK);
 
+        }
+
+        [Command("sayprivate", RunMode = RunMode.Async)]
+        public async Task SayPrivate(ulong userId, string text)
+        {
+            bool isRequesterAdmin = await _userService.IsAdmin(Context.Message.Author.Username);
+            if (!isRequesterAdmin)
+            {
+                await Context.Message.AddReactionAsync(CommonEmoij.NOK);
+                return;
+            }
+
+            var userSend = _discordSocketClient.GetUser(userId);
+            if (userSend == null)
+            {
+                await Context.Message.AddReactionAsync(CommonEmoij.NOK);
+                return;
+            } 
+            else
+            {
+                await userSend.SendMessageAsync(text);
+                await Context.Message.AddReactionAsync(CommonEmoij.NOK);
+                return;
+            }
         }
 
 

@@ -1,10 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿#define MYSQL
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+
 
 namespace ISurvivalBot.Models
 {
