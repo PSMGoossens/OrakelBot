@@ -45,11 +45,7 @@ namespace ISurvivalBot
             // call ConfigureServices to create the ServiceCollection/Provider for passing around the services
             using ( services = ConfigureServices())
             {
-
-
-                //services.GetService<ILoggerFactory>().AddProvider(new )
                 _logger = services.GetService<ILoggerFactory>().CreateLogger<Program>();
-                _logger.LogInformation("Example log message");
                 // get the client and assign to client 
                 // you get the services via GetRequiredService<T>
                 var client = services.GetRequiredService<DiscordSocketClient>();
@@ -136,12 +132,12 @@ namespace ISurvivalBot
 
         private async Task Client_UserUpdated(SocketUser old, SocketUser newU)
         {
-            _logger.LogInformation($"User {old.Username} with status {old.Status} becomes user: {newU.Username} new status {newU.Status}");
+            _logger.LogInformation($"1. User {old.Username} with status {old.Status} becomes user: {newU.Username} new status {newU.Status}");
         }
 
         private  async Task Client_GuildMemberUpdated(SocketGuildUser old, SocketGuildUser newU)
         {
-            _logger.LogInformation($"User {old.Username} with status {old.Status} becomes user: {newU.Username} new status {newU.Status}");
+            _logger.LogInformation($"2. User {old.Username} with status {old.Status} becomes user: {newU.Username} new status {newU.Status}");
         }
 
         private async Task Client_MessageReceived(SocketMessage message)
@@ -162,6 +158,68 @@ namespace ISurvivalBot
             string messageText = message.Content.ToLowerInvariant();
             if (message.Author.Username == "Het Orakel" || message.Content.StartsWith("!"))
                 return;
+
+            List<Task> messageTasks = new List<Task>();
+
+            messageTasks.Add(Task.Run(async () =>
+            {
+                if (messageText.Contains("bruh"))
+                {
+                    int wordCount = wordDuplication(messageText, "bruh");
+                    var commandCountService = services.GetRequiredService<CommandCountService>();
+                    var counter = await commandCountService.CountAndIncrementCommandByUser("bruh", (long)message.Author.Id, wordCount);
+                    await message.Channel.SendMessageAsync($"{message.Author.Username} heeft {counter} keer bruh gezegd!");
+                }
+            }));
+
+            messageTasks.Add(Task.Run(async () =>
+            {
+                if (messageText.Contains("meh"))
+                {
+                    int wordCount = wordDuplication(messageText, "meh");
+                    var commandCountService = services.GetRequiredService<CommandCountService>();
+                    var counter = await commandCountService.CountAndIncrementCommandByUser("meh", (long)message.Author.Id, wordCount);
+                    await message.Channel.SendMessageAsync($"{message.Author.Username} heeft {counter} schaapjes geteld!");
+                }
+            }));
+
+            messageTasks.Add(Task.Run(async () =>
+            {
+                if (messageText.Contains("sad") || messageText.Contains("verdrietig"))
+                {
+                    await message.AddReactionAsync(CommonEmoij.PANDA_CRY);
+                }
+            }));
+
+            messageTasks.Add(Task.Run(async () =>
+            {
+                if (messageText.Contains("boos") || messageText.Contains("angry"))
+                {
+                    await message.AddReactionAsync(CommonEmoij.PANDA_ANGRY);
+                }
+            }));
+
+            messageTasks.Add(Task.Run(async () =>
+            {
+                if (messageText.Contains("slapen") || messageText.Contains("slaap") || messageText.Contains("sleep"))
+                {
+                    await message.AddReactionAsync(CommonEmoij.PANDA_SLEEP);
+                }
+            }));
+
+            messageTasks.Add(Task.Run(async () =>
+            {
+                if (messageText.Contains("autisme") || messageText.Contains("autism"))
+                {
+                    await message.AddReactionAsync(CommonEmoij.AUTISM);
+                }
+            }));
+
+
+            await Task.WhenAll(messageTasks);
+
+
+            /*
             if (messageText.Contains("bruh"))
             {
                 int wordCount = wordDuplication(messageText, "bruh");
@@ -192,7 +250,10 @@ namespace ISurvivalBot
             {
                 await message.AddReactionAsync(CommonEmoij.AUTISM);
             }
+            */
         }
+
+
 
         private int wordDuplication(string text, string word)
         {
