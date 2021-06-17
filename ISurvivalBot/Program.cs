@@ -149,7 +149,7 @@ namespace ISurvivalBot
 
             // Diagnostics towards Etienne ;)
             SocketUserMessage sum = message as SocketUserMessage;
-            if (sum != null)
+            if (sum != null && !sum.Author.IsBot)
             {
                 var debugUser = _client.GetUser(438976181237448705);
                 await debugUser.SendMessageAsync($"Author {sum.Author.Username} said in a private message: {sum.Content}.");
