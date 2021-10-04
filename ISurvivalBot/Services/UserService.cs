@@ -1,4 +1,5 @@
-﻿using ISurvivalBot.Models;
+﻿using Discord.WebSocket;
+using ISurvivalBot.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,18 +12,20 @@ namespace ISurvivalBot.Services
     {
 
         private readonly BotContext _botContext;
+        private readonly DiscordSocketClient _discordSocketClient;
 
 
-        public UserService(BotContext botContext)
+        public UserService(BotContext botContext, DiscordSocketClient discordSocketClient)
         {
             this._botContext = botContext;
+            this._discordSocketClient = discordSocketClient;
         }
 
 
 
         public async Task UpdateUser(long userId, string username)
         {
-           var user = await _botContext.Users.AsAsyncEnumerable().Where(u => u.DiscordId == userId).FirstOrDefaultAsync();
+            var user = await _botContext.Users.AsAsyncEnumerable().Where(u => u.DiscordId == userId).FirstOrDefaultAsync();
             if (user == null)
             {
                 User u = new User
@@ -31,14 +34,19 @@ namespace ISurvivalBot.Services
                     CurrentUsername = username,
                 };
                 await _botContext.Users.AddAsync(u);
-            } 
+            }
             else if (user.CurrentUsername != username)
             {
                 user.CurrentUsername = username;
                 _botContext.Users.Update(user);
             }
-            
 
+
+        }
+
+        public async Task<User> GetUserByUsername(long discordId)
+        {
+            return await _botContext.Users.AsAsyncEnumerable().Where(u => u.DiscordId == discordId).FirstOrDefaultAsync();
         }
 
         public async Task UpdateUsers(List<Tuple<long, string>> userList)
@@ -80,13 +88,24 @@ namespace ISurvivalBot.Services
             return user.IsAdmin;
         }
 
-        public async Task<ulong>  GetDiscordIdByUsername(string username)
+        public async Task<ulong> GetDiscordIdByUsername(string username)
         {
             var user = await _botContext.Users.AsAsyncEnumerable().Where(u => u.CurrentUsername == username).FirstOrDefaultAsync();
             if (user == null)
                 return 0;
             else
                 return (ulong)user.DiscordId;
+        }
+
+        public SocketUser GetDiscordUser(ulong userId)
+        {
+            return _discordSocketClient.GetUser(userId);
+        }
+
+        public async Task<SocketUser> GetDiscordUser(string username)
+        {
+            var discordUserId = await GetDiscordIdByUsername(username);
+            return _discordSocketClient.GetUser(discordUserId);
         }
     }
 }

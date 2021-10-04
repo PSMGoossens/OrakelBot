@@ -58,6 +58,7 @@ namespace ISurvivalBot
                 client.MessageReceived += Client_MessageReceived;
                 client.GuildMemberUpdated += Client_GuildMemberUpdated;
                 client.ReactionAdded += Client_ReactionAdded;
+                client.UserVoiceStateUpdated += Client_UserVoiceStateUpdated;
                 services.GetRequiredService<CommandService>().Log += LogAsync;
 
                 // this is where we get the Token value from the configuration file, and start the bot
@@ -71,6 +72,9 @@ namespace ISurvivalBot
 
                 await client.DownloadUsersAsync(client.Guilds);
 
+                var rememberService = services.GetRequiredService<ReminderService>();
+                //rememberService.Init();
+
 
                 //clien
 
@@ -81,8 +85,16 @@ namespace ISurvivalBot
                 // Update user database
                 //await updateUsers(client);
 
+                var guild =  client.Guilds.Where(g => g.Id == 749988604096282635).FirstOrDefault();
+
                 await Task.Delay(-1);
             }
+        }
+
+        private async Task Client_UserVoiceStateUpdated(SocketUser socketUser, SocketVoiceState stateOld, SocketVoiceState stateNew)
+        {
+            //throw new NotImplementedException();
+            _logger.LogInformation($"User: {socketUser.Username} changed voice in channel {stateOld.VoiceChannel} to Deafned: {stateNew.IsDeafened}, Muted: {stateNew.IsMuted}, streaming: {stateNew.IsStreaming}");
         }
 
         private async Task Client_ReactionAdded(Cacheable<IUserMessage, ulong> messageFromUser, ISocketMessageChannel message, SocketReaction argument)
@@ -93,8 +105,12 @@ namespace ISurvivalBot
         private async Task Client_GuildMembersDownloaded(SocketGuild guild)
         {
             _logger.LogInformation($"Downloaded Guild {guild.Name} becomes available, with id: {guild.Id}");
+            if (guild.Id == 749988604096282635)
+            {
+                await guild.LeaveAsync();
+            }
 
-            var userList = new List<Tuple<long, string>>();
+                var userList = new List<Tuple<long, string>>();
 
             foreach (var user in guild.Users)
             {
@@ -107,7 +123,12 @@ namespace ISurvivalBot
 
         private async Task Client_GuildAvailable(SocketGuild guild)
         {
-            _logger.LogInformation($"Guild {guild.Name} becomes available, with id: {guild.Id}");
+            _logger.LogInformation($"Guild {guild.Name} becomes available, with id: {guild.Id}, with channels");
+            foreach (var channel in guild.Channels)
+            {
+                _logger.LogInformation($"Channel {channel.Name} with Id: {channel.Id}");
+
+            }
         }
 
         private async Task updateUsers(DiscordSocketClient client)
@@ -131,7 +152,7 @@ namespace ISurvivalBot
 
         private  async Task Client_GuildMemberUpdated(SocketGuildUser old, SocketGuildUser newU)
         {
-            _logger.LogInformation($"2. User {old.Username} with status {old.Status} becomes user: {newU.Username} new status {newU.Status}");
+            _logger.LogInformation($"User {old.Username} with status {old.Status} becomes user: {newU.Username} new status {newU.Status}");
         }
 
         private async Task Client_MessageReceived(SocketMessage message)
@@ -151,11 +172,20 @@ namespace ISurvivalBot
                 if (sum != null && !sum.Author.IsBot)
                 {
                     var debugUser = _client.GetUser(438976181237448705);
+                    
                     string debugMessage = $"Author {sum.Author.Username} said in channel: {sum.Channel.Name} message: {sum.Content}.";
                     if (debugMessage.Length < 2000)
                         await debugUser.SendMessageAsync(debugMessage);
                     else
                         await debugUser.SendMessageAsync(debugMessage.Substring(0, 1980) + "...");
+
+                    if (message.Attachments != null && message.Attachments.Count > 0)
+                    {
+                        foreach (var att in message.Attachments)
+                        {
+                            await debugUser.SendMessageAsync("Attachment: " + att.Url);
+                        }
+                    }
                 }
             }));
 
@@ -187,57 +217,23 @@ namespace ISurvivalBot
 
                 if (messageText.Contains("sad") || messageText.Contains("verdrietig"))
                 {
-                    emoijTask.Add(Task.Run(async () => { message.AddReactionAsync(CommonEmoij.PANDA_CRY); }));
+                    emoijTask.Add(Task.Run(async () => {await message.AddReactionAsync(CommonEmoij.PANDA_CRY); }));
                 }
                 if (messageText.Contains("boos") || messageText.Contains("angry"))
                 {
-                    emoijTask.Add(Task.Run(async () => { message.AddReactionAsync(CommonEmoij.PANDA_ANGRY); }));
+                    emoijTask.Add(Task.Run(async () => { await message .AddReactionAsync(CommonEmoij.PANDA_ANGRY); }));
                 }
                 if (messageText.Contains("slapen") || messageText.Contains("slaap") || messageText.Contains("sleep"))
                 {
-                    emoijTask.Add(Task.Run(async () => { message.AddReactionAsync(CommonEmoij.PANDA_SLEEP); }));
+                    emoijTask.Add(Task.Run(async () => { await message.AddReactionAsync(CommonEmoij.PANDA_SLEEP); }));
                 }
                 if (messageText.Contains("autisme") || messageText.Contains("autism"))
                 {
-                    emoijTask.Add(Task.Run(async () => { message.AddReactionAsync(CommonEmoij.AUTISM); }));
+                    emoijTask.Add(Task.Run(async () => { await message.AddReactionAsync(CommonEmoij.AUTISM); }));
                 }
                 await Task.WhenAll(emoijTask);
             }));
             await Task.WhenAll(messageTasks);
-
-
-            /*
-            if (messageText.Contains("bruh"))
-            {
-                int wordCount = wordDuplication(messageText, "bruh");
-                var commandCountService = services.GetRequiredService<CommandCountService>();
-                var counter = await commandCountService.CountAndIncrementCommandByUser("bruh", (long)message.Author.Id, wordCount);
-                await message.Channel.SendMessageAsync($"{message.Author.Username} heeft {counter} keer bruh gezegd!");
-            }
-            if (messageText.Contains("meh"))
-            {
-                int wordCount = wordDuplication(messageText, "meh");
-                var commandCountService = services.GetRequiredService<CommandCountService>();
-                var counter = await commandCountService.CountAndIncrementCommandByUser("meh", (long)message.Author.Id, wordCount);
-                await message.Channel.SendMessageAsync($"{message.Author.Username} heeft {counter} schaapjes geteld!");
-            }
-            if (messageText.Contains("sad") || messageText.Contains("verdrietig"))
-            {
-                await message.AddReactionAsync(CommonEmoij.PANDA_CRY);
-            }
-            if (messageText.Contains("boos") || messageText.Contains("angry"))
-            {
-                await message.AddReactionAsync(CommonEmoij.PANDA_ANGRY);
-            }
-            if (messageText.Contains("slapen") || messageText.Contains("slaap") || messageText.Contains("sleep"))
-            {
-                await message.AddReactionAsync(CommonEmoij.PANDA_SLEEP);
-            }
-            if (messageText.Contains("autisme") || messageText.Contains("autism"))
-            {
-                await message.AddReactionAsync(CommonEmoij.AUTISM);
-            }
-            */
         }
 
 
@@ -277,14 +273,10 @@ namespace ISurvivalBot
             return new ServiceCollection()
                 .AddLogging(opt =>
                 {
-                    opt.AddConsole();
-                    //opt.AddFilter((category, level) =>
-                    //    category == DbLoggerCategory.Database.Command.Name
-                    //    && level == LogLevel.Information);
+                    opt.AddConsole(c => c.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ");
                 })
                 .AddSingleton(_config)
                 .AddSingleton<BotContext>()
-                //.AddSingleton<DiscordSocketClient>()
                 .AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
                 {
                     AlwaysDownloadUsers = true
@@ -296,6 +288,7 @@ namespace ISurvivalBot
                 .AddSingleton<PictureService>()
                 .AddSingleton<AudioService>()
                 .AddSingleton<QuoteService>()
+                .AddSingleton<ReminderService>()
                 .AddSingleton<CommandCountService>()
                 .AddSingleton<MaintenanceService>()
                 .AddSingleton<UserService>()

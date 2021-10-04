@@ -22,12 +22,13 @@ namespace ISurvivalBot.Models
 
         public DbSet<User> Users { get; set; }
 
+        public DbSet<Reminder> Reminders { get; set; }
+
 
         public BotContext(ILoggerFactory loggerFactory)
         {
             _loggingFactory = loggerFactory;
         }
-        //public DbSet<CommandCounter> CommandCounters { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
