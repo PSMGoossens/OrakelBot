@@ -26,10 +26,8 @@ namespace ISurvivalBot.Services
         public async Task UpdateUser(long userId, string username)
         {
             var user = await _botContext.Users.AsAsyncEnumerable().Where(u => u.DiscordId == userId).FirstOrDefaultAsync();
-            if (user == null)
-            {
-                User u = new User
-                {
+            if (user == null) {
+                var u = new User {
                     DiscordId = userId,
                     CurrentUsername = username,
                 };

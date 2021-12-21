@@ -112,19 +112,16 @@ namespace ISurvivalBot.Services
         public async Task<AudioServiceStatus> PlaySound(IGuild guild, IMessageChannel channel, IVoiceChannel voiceChannel, string path)
         {
             AudioServiceState audioState = await getAudioState(guild);
-            if (audioState == null || audioState.IsPlaying)
-            {
-                Console.WriteLine("Is already playing");
+            if (audioState == null || audioState.IsPlaying) {
+                _logger.LogInformation("Is already playing");
                 return AudioServiceStatus.Failure;
             }
-            if (voiceChannel == null || voiceChannel.Guild.Id != guild.Id)
-            {
+            if (voiceChannel == null || voiceChannel.Guild.Id != guild.Id)  {
                 return AudioServiceStatus.Failure;
             }
 
             // Your task: Get a full path to the file if the value of 'path' is only a filename.
-            if (!File.Exists(path))
-            {
+            if (!File.Exists(path)) {
                 await channel.SendMessageAsync("File does not exist.");
                 _logger.LogInformation("Not connected");
                 return AudioServiceStatus.Failure;
