@@ -64,23 +64,23 @@ namespace ISurvivalBot.Services
 
         public void Init()
         {
-            var user = _userService.GetDiscordUser(438976181237448705);
-            nextEvent = new ReminderConverted(new Reminder
-            {
-                Id = 0,
-                ForUser = new User
-                {
-                    DiscordId = 438976181237448705,
-                    CurrentUsername = "Cameron90"
-                },
-                CronosFormat = "*/2 * * * *",
-                Text = "Dit is een test bericht"
-            }, user);
+            //var user = _userService.GetDiscordUser(438976181237448705);
+            //nextEvent = new ReminderConverted(new Reminder
+            //{
+            //    Id = 0,
+            //    ForUser = new User
+            //    {
+            //        DiscordId = 438976181237448705,
+            //        CurrentUsername = "Cameron90"
+            //    },
+            //    CronosFormat = "*/2 * * * *",
+            //    Text = "Dit is een test bericht"
+            //}, user);
 
-            // Timer that checks every minute if the task needs to be executed
-            timerTask = new Timer(1000 * 60);
-            timerTask.Elapsed += TimerTask_Elapsed;
-            timerTask.Start();
+            //// Timer that checks every minute if the task needs to be executed
+            //timerTask = new Timer(1000 * 60);
+            //timerTask.Elapsed += TimerTask_Elapsed;
+            //timerTask.Start();
         }
 
 

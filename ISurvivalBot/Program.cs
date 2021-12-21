@@ -56,9 +56,6 @@ namespace ISurvivalBot
                 client.Log += LogAsync;
                 client.Ready += ReadyAsync;
                 client.MessageReceived += Client_MessageReceived;
-                client.GuildMemberUpdated += Client_GuildMemberUpdated;
-                client.ReactionAdded += Client_ReactionAdded;
-                client.UserVoiceStateUpdated += Client_UserVoiceStateUpdated;
                 services.GetRequiredService<CommandService>().Log += LogAsync;
 
                 // this is where we get the Token value from the configuration file, and start the bot
@@ -73,45 +70,19 @@ namespace ISurvivalBot
                 await client.DownloadUsersAsync(client.Guilds);
 
                 var rememberService = services.GetRequiredService<ReminderService>();
-                //rememberService.Init();
 
-
-                //clien
-
-                // client.DownloadUsersAsync()
-
-                //await 
-
-                // Update user database
-                //await updateUsers(client);
-
-                var guild =  client.Guilds.Where(g => g.Id == 749988604096282635).FirstOrDefault();
 
                 await Task.Delay(-1);
             }
         }
 
-        private async Task Client_UserVoiceStateUpdated(SocketUser socketUser, SocketVoiceState stateOld, SocketVoiceState stateNew)
-        {
-            //throw new NotImplementedException();
-            _logger.LogInformation($"User: {socketUser.Username} changed voice in channel {stateOld.VoiceChannel} to Deafned: {stateNew.IsDeafened}, Muted: {stateNew.IsMuted}, streaming: {stateNew.IsStreaming}");
-        }
 
-        private async Task Client_ReactionAdded(Cacheable<IUserMessage, ulong> messageFromUser, ISocketMessageChannel message, SocketReaction argument)
-        {
-            //throw new NotImplementedException();
-        }
 
         private async Task Client_GuildMembersDownloaded(SocketGuild guild)
         {
             _logger.LogInformation($"Downloaded Guild {guild.Name} becomes available, with id: {guild.Id}");
-            if (guild.Id == 749988604096282635)
-            {
-                await guild.LeaveAsync();
-            }
 
-                var userList = new List<Tuple<long, string>>();
-
+            var userList = new List<Tuple<long, string>>();
             foreach (var user in guild.Users)
             {
                 userList.Add(Tuple.Create((long)user.Id, user.Username));
@@ -131,41 +102,15 @@ namespace ISurvivalBot
             }
         }
 
-        private async Task updateUsers(DiscordSocketClient client)
-        {
-
-            var channels = client.Guilds;
-            // Check if channels are available
-            if (channels.Count() == 0)
-                return;
-
-            // Get the users from the first channel
-            var channel = channels.First();
-            await foreach(var lst in channel.GetUsersAsync())
-            {
-                foreach (var user in lst)
-                {
-                    _logger.LogInformation($"User id: {user.Id}, Username: {user.Username}");
-                }
-            }
-        }
-
-        private  async Task Client_GuildMemberUpdated(SocketGuildUser old, SocketGuildUser newU)
-        {
-            _logger.LogInformation($"User {old.Username} with status {old.Status} becomes user: {newU.Username} new status {newU.Status}");
-        }
 
         private async Task Client_MessageReceived(SocketMessage message)
         {
-
-            
-
             string messageText = message.Content.ToLowerInvariant();
             if (message.Author.Username == "Het Orakel" || message.Content.StartsWith("!"))
                 return;
 
             List<Task> messageTasks = new List<Task>();
-            messageTasks.Add(Task.Run(async () =>
+            /*messageTasks.Add(Task.Run(async () =>
             {
                 // Diagnostics towards Etienne ;)
                 SocketUserMessage sum = message as SocketUserMessage;
@@ -187,7 +132,7 @@ namespace ISurvivalBot
                         }
                     }
                 }
-            }));
+            }));*/
 
             messageTasks.Add(Task.Run(async () =>
             {
@@ -215,11 +160,13 @@ namespace ISurvivalBot
             {
                 List<Task> emoijTask = new List<Task>();
 
+                
+
                 if (messageText.Contains("sad") || messageText.Contains("verdrietig"))
                 {
                     emoijTask.Add(Task.Run(async () => {await message.AddReactionAsync(CommonEmoij.PANDA_CRY); }));
                 }
-                if (messageText.Contains("boos") || messageText.Contains("angry"))
+                if ((messageText.Contains("boos") && !messageText.Contains("booster")) || messageText.Contains("angry"))
                 {
                     emoijTask.Add(Task.Run(async () => { await message .AddReactionAsync(CommonEmoij.PANDA_ANGRY); }));
                 }

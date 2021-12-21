@@ -10,6 +10,28 @@ using System.Threading.Tasks;
 
 namespace ISurvivalBot.Services
 {
+
+
+    public enum Animality
+    {
+        cat,
+        dog,
+        bird,
+        panda,
+        redpanda,
+        koala,
+        fox,
+        whale,
+        kangaroo,
+        bunny,
+        lion,
+        bear,
+        frog,
+        duck,
+        penguin
+    };
+
+
     public class PictureService
     {
         private readonly HttpClient _http;
@@ -28,10 +50,26 @@ namespace ISurvivalBot.Services
             return await resp.Content.ReadAsStreamAsync();
         }
 
-        public async Task<Stream> GetPandaPictureAsync()
+        /*public async Task<Stream> GetPandaPictureAsync()
         {
             var resp = await _http.GetAsync("https://redpanda.pics/");
             return await resp.Content.ReadAsStreamAsync();
+        }*/
+
+
+        public async Task<Stream> GetAnimality(Animality animality)
+        {
+            var resp = await _http.GetAsync($"https://api.animality.xyz/img/{animality}");
+            var responseBody = await resp.Content.ReadAsStringAsync();
+            dynamic body = JsonConvert.DeserializeObject(responseBody);
+
+            if (body.length == 0)
+            {
+                return null;
+            }
+
+            var imageResponse = await _http.GetAsync($"{body.link}");
+            return await imageResponse.Content.ReadAsStreamAsync();
         }
 
 
